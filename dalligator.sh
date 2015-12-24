@@ -71,15 +71,12 @@ for i in "${input[@]}"; do
     fi
 done
 
-# Handle missing delegates or arguments.
+# Handle missing delegates.
 
 if [ "$delegatesIndex" == 0 ]; then
     echo Please provide at least two programs to delegate.
     echo $HELP
     exit 1
-fi
-if [ "$argumentsIndex" == 0 ]; then
-    arguments=$(pwd)
 fi
 
 # Launch the first available delegated program with the arguments.
