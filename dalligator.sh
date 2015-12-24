@@ -4,7 +4,7 @@
 #
 # Usage: dalligator <delegated_program_path>... [with <delegated_argument>...]
 #
-# Copyright (c) 2015 Sayanta Chaudhuri <sayantan.chaudhuri@gmail.com>
+# Copyright (c) 2015 Sayantan Chaudhuri <sayantan.chaudhuri@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
