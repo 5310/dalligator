@@ -83,7 +83,7 @@ fi
 
 found=false
 for i in "${delegates[@]}"; do
-    if pgrep -f "$i" > /dev/null; then
+    if pgrep -f "^$i" > /dev/null; then
         # When a delegated program is already found to be running launch it!
         echo "Running instance of '$i' found. Launching..."
         nohup "$i" ${arguments[*]} >&/dev/null &
