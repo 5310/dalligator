@@ -46,18 +46,27 @@ fi
 input=("$@")
 
 # Separate out the delegate programs from the arguments.
-
-delegates=()
-delegatesIndex=0
+defaultDelegate=false
+runningDelegate=false
+delegates=0
 switch=false
 arguments=()
 argumentsIndex=0
 for i in "${input[@]}"; do
     if [ "$i" != "$SEPARATOR" ] ; then
         if [ "$switch" != true ]; then
-            # Until the separator is encountered, accumulate programs.
-            delegates[$delegatesIndex]="$i"
-            delegatesIndex=$((delegatesIndex+1))
+            # Until the separator is encountered, count as delegates.
+            delegates=$((delegates+1))
+            # Store the first running one delegate.
+            if [ "$runningDelegate" == false ]; then
+                if pgrep -f "^$i" > /dev/null; then
+                    runningDelegate="$i"
+                fi
+            fi
+            # And set the very first delegate as default.
+            if [ "$defaultDelegate" == false ]; then
+                defaultDelegate="$i"
+            fi
         else
             # Else accumulate arguments.
             arguments[$argumentsIndex]="$i"
@@ -71,28 +80,24 @@ for i in "${input[@]}"; do
     fi
 done
 
+
+
 # Handle missing delegates.
 
-if [ "$delegatesIndex" == 0 ]; then
+if [ "$delegates" == 0 ]; then
     echo Please provide at least two programs to delegate.
     echo $HELP
     exit 1
 fi
 
-# Launch the first available delegated program with the arguments.
 
-found=false
-for i in "${delegates[@]}"; do
-    if pgrep -f "^$i" > /dev/null; then
-        # When a delegated program is already found to be running launch it!
-        echo "Running instance of '$i' found. Launching..."
-        nohup "$i" ${arguments[*]} >&/dev/null &
-        found=true
-        break
-    fi
-done
-if [ "$found" = false ]; then
-    # Else, launch the first program.
-    echo "No running instances found. Launching '$i'..."
-    nohup "${delegates[0]}" ${arguments[*]} >&/dev/null &
+
+# Launch delegate.
+
+if [ "$runningDelegate" != false ]; then
+    echo "Running instance of '$runningDelegate' found. Launching..."
+    nohup "$runningDelegate" ${arguments[*]} >&/dev/null &
+else
+    echo "No running instances found. Launching '$defaultDelegate'..."
+    nohup "$defaultDelegate" ${arguments[*]} >&/dev/null &
 fi
